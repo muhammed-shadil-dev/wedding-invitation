@@ -1,0 +1,527 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   A single palette that travels from midnight to dawn. Sections
+   do not own colours; the backdrop does. Everything here is
+   referenced by name, never by hex, anywhere else in the app.
+   ───────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Night — the ground the invitation floats in */
+  --color-ink: #07060b;
+  --color-velvet: #110d18;
+  --color-plum: #1b1424;
+  --color-dusk: #2a1f33;
+
+  /* Dawn — where the story ends */
+  --color-ember: #3a2418;
+  --color-amber: #6b4423;
+
+  /* Paper */
+  --color-ivory: #f7f2e8;
+  --color-paper: #fbf8f1;
+  --color-parchment: #ece2d0;
+
+  /* Metal */
+  --color-gold: #c9a86a;
+  --color-gold-light: #ecd9a8;
+  --color-gold-deep: #8a6b33;
+
+  /* Accents, used sparingly */
+  --color-forest: #1f3a2c;
+  --color-forest-ink: #23392c;
+  --color-rose: #c08a80;
+  --color-sage: #8a9a85;
+  --color-wax: #8c2f39;
+
+  /* Type */
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-script: var(--font-pinyon), "Pinyon Script", cursive;
+  --font-sans: var(--font-jost), "Jost", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: var(--font-amiri), "Amiri", "Scheherazade New", serif;
+
+  /* The scale. Six sizes, and nothing between them.
+     Each is bounded by viewport height as well as width so that a
+     short screen never has its composition pushed off the bottom. */
+  /* The couple's names are set over three stacked lines, so this is
+     bounded far more tightly by height than a single-line display size
+     would need to be — three lines of 8.5vh would not leave room for
+     the envelope beneath them on a short, wide screen. */
+  --text-hero: clamp(1.75rem, min(8vw, 5.2vh), 3.25rem);
+  --text-display: clamp(1.95rem, min(7.5vw, 6vh), 3.25rem);
+  --text-title: clamp(1.4rem, 5.4vw, 2rem);
+  --text-lede: clamp(1rem, 4.1vw, 1.3rem);
+  --text-body: clamp(0.875rem, 3.5vw, 0.975rem);
+  --text-caption: clamp(0.75rem, 3vw, 0.85rem);
+  --text-eyebrow: 0.6875rem;
+  --text-micro: 0.55rem;
+  --text-arabic: clamp(1.2rem, min(6.2vw, 3.4vh), 2rem);
+
+  /* Motion — mirrors lib/motion.ts so CSS and JS agree */
+  --ease-silk: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-ink: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-veil: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: dark;
+  --backdrop-top: var(--color-ink);
+  --backdrop-bottom: var(--color-velvet);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  /* Lenis drives the scroll; native smooth would fight it. */
+  scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ink);
+  color: var(--color-ivory);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-gold) 30%, transparent);
+  color: var(--color-ivory);
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Lenis owns the scroll container while it is active. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ── Typography primitives ─────────────────────────────────── */
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.font-script {
+  font-family: var(--font-script);
+  font-weight: 400;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* Foil: a metallic sheen for names and numerals */
+.foil {
+  background: linear-gradient(
+    100deg,
+    var(--color-gold-deep) 0%,
+    var(--color-gold) 22%,
+    var(--color-gold-light) 42%,
+    #fffaf0 50%,
+    var(--color-gold-light) 58%,
+    var(--color-gold) 78%,
+    var(--color-gold-deep) 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: foil-sweep 9s var(--ease-ink) infinite;
+}
+
+@keyframes foil-sweep {
+  0%,
+  12% {
+    background-position: 130% 0;
+  }
+  58%,
+  100% {
+    background-position: -30% 0;
+  }
+}
+
+/* ── Surfaces ──────────────────────────────────────────────── */
+
+/* The invitation card stock: warm, slightly uneven, never flat white */
+.paper {
+  background:
+    radial-gradient(120% 90% at 50% 0%, #fffdf8 0%, var(--color-paper) 45%, var(--color-parchment) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 30px 60px -20px rgba(0, 0, 0, 0.55),
+    0 8px 20px -8px rgba(0, 0, 0, 0.4);
+}
+
+/* A hairline in gold, used for rules and card edges */
+.hairline {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color-gold) 60%, transparent) 25%,
+    var(--color-gold) 50%,
+    color-mix(in srgb, var(--color-gold) 60%, transparent) 75%,
+    transparent 100%
+  );
+}
+
+/* Glass used only for controls that float above the world */
+.control-glass {
+  background: color-mix(in srgb, var(--color-ink) 55%, transparent);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 22%, transparent);
+}
+
+/* ── Depth ─────────────────────────────────────────────────── */
+
+.stage {
+  perspective: 1600px;
+  perspective-origin: 50% 42%;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ── Atmosphere ────────────────────────────────────────────── */
+
+/* Film grain. One tiny tiled SVG, animated by transform only. */
+.grain {
+  position: fixed;
+  inset: -150%;
+  width: 400%;
+  height: 400%;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  animation: grain-drift 7s steps(6) infinite;
+}
+
+@keyframes grain-drift {
+  0% { transform: translate3d(0, 0, 0); }
+  16% { transform: translate3d(-2%, -3%, 0); }
+  33% { transform: translate3d(-4%, 2%, 0); }
+  50% { transform: translate3d(2%, -4%, 0); }
+  66% { transform: translate3d(-3%, 3%, 0); }
+  83% { transform: translate3d(3%, 1%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* Vignette, to keep the eye in the centre of the frame */
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 55;
+  background: radial-gradient(
+    ellipse 110% 75% at 50% 45%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.35) 78%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+/* Slow drifting motes of light */
+@keyframes mote {
+  0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0; }
+  12% { opacity: var(--mote-opacity, 0.5); }
+  88% { opacity: var(--mote-opacity, 0.5); }
+  100% { transform: translate3d(var(--mote-x, 20px), -100vh, 0) scale(1.25); opacity: 0; }
+}
+
+/* A candle-flame flicker for the seal glow */
+@keyframes flicker {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  45% { opacity: 0.78; transform: scale(1.04); }
+  70% { opacity: 0.48; transform: scale(0.985); }
+}
+
+/* The gentle breathing of the closed envelope, inviting a tap */
+@keyframes breathe {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -6px, 0) scale(1.004); }
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-gold) 28%, transparent);
+  border-radius: 999px;
+}
+
+/* ── Reduced motion ────────────────────────────────────────────
+   Framer Motion is gated in JS. This handles everything CSS owns:
+   grain drift, foil sweep, flicker, motes, breathing. The content
+   is unchanged — only the movement stops.
+   ───────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .grain {
+    animation: none;
+    opacity: 0.1;
+  }
+
+  .foil {
+    animation: none;
+    background-position: 40% 0;
+  }
+}
+
+/* Honour the same preference for anyone who has it set via the
+   data attribute we write on <html> (used by the motion provider). */
+[data-reduced-motion="true"] .grain,
+[data-reduced-motion="true"] .foil {
+  animation: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TYPE
+
+   Three voices and six sizes. Everything on the page is one of
+   these classes; components do not set font sizes of their own.
+
+   The hierarchy, loudest to quietest:
+     hero      the couple's names, once at the top and once at the end
+     display   what each scene is called
+     title     a name within a scene — an event, a moment
+     lede      the one sentence that sets a scene, in italic serif
+     body      everything said at normal speaking volume
+     caption   photograph captions and field labels
+     eyebrow   the gold small-caps label that opens a scene
+   ───────────────────────────────────────────────────────────── */
+
+.t-hero {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: 300;
+  line-height: 0.95;
+  /* Large display type needs negative tracking to stop it looking
+     loose; small caps need positive. Both are set here, once. */
+  letter-spacing: -0.02em;
+}
+
+.t-display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+}
+
+.t-title {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.t-lede {
+  font-family: var(--font-display);
+  font-size: var(--text-lede);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.t-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.t-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+/* The gold label that opens every scene. */
+.t-eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-eyebrow);
+  font-weight: 400;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: color-mix(in srgb, var(--color-gold) 82%, transparent);
+}
+
+/* The smallest voice: field labels, indices, credits. */
+.t-micro {
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+.t-script {
+  font-family: var(--font-script);
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* The ampersand is always the script face, always smaller than the
+   names it joins, and never carries the foil. */
+.amp {
+  font-family: var(--font-script);
+  font-size: 0.52em;
+  vertical-align: 0.06em;
+  margin-inline: 0.14em;
+  letter-spacing: 0;
+  color: color-mix(in srgb, var(--color-gold-light) 85%, transparent);
+}
+
+/* Measure. Prose is never wider than this, at any breakpoint. */
+.measure {
+  max-width: 34ch;
+  margin-inline: auto;
+}
+.measure-wide {
+  max-width: 46ch;
+  margin-inline: auto;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PHOTOGRAPHY
+
+   Every photograph on the site is graded the same way, which is
+   most of what makes a set of unrelated images read as one film.
+   Three layers over the picture:
+
+     grade    a warm multiply, pulling everything toward candlelight
+     bloom    a soft light lift in the upper third
+     edge     an inner vignette so the frame has weight
+
+   Applied by <Photograph/>. No component grades its own images.
+   ───────────────────────────────────────────────────────────── */
+
+.photo-frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-plum);
+  /* Squares and rectangles both get the same barely-there radius. */
+  border-radius: 2px;
+}
+
+.photo-grade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  background: linear-gradient(
+    165deg,
+    rgba(58, 36, 24, 0.32) 0%,
+    rgba(27, 20, 36, 0.18) 45%,
+    rgba(11, 10, 16, 0.5) 100%
+  );
+}
+
+.photo-bloom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    120% 80% at 50% 8%,
+    rgba(236, 217, 168, 0.16) 0%,
+    transparent 62%
+  );
+}
+
+.photo-edge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 40px rgba(7, 6, 11, 0.55),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 14%, transparent);
+}
+
+/* The caption sits on the picture, in the dark at its foot. */
+.photo-caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  pointer-events: none;
+  padding: 2rem 0.9rem 0.75rem;
+  background: linear-gradient(to top, rgba(7, 6, 11, 0.8), transparent);
+}
+
+/* An arch, borrowed from the jharokha windows of the venue city.
+   Used for the two portraits and nowhere else. */
+.arch {
+  border-radius: 9999px 9999px 3px 3px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ARABIC
+
+   The Bismillah is set in a real naskh face and marked rtl, so the
+   letters join and the diacritics sit where they belong. It is the
+   first thing on the invitation and the first thing a guest reads,
+   so it is not left to a fallback.
+   ───────────────────────────────────────────────────────────── */
+.t-arabic {
+  font-family: var(--font-arabic);
+  font-size: var(--text-arabic);
+  font-weight: 400;
+  /* Naskh needs air above and below for the marks to breathe. */
+  line-height: 1.9;
+  letter-spacing: 0;
+}
