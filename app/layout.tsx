@@ -39,14 +39,41 @@ const jost = Jost({
   display: "swap",
 });
 
+/**
+ * Where the site actually lives, for absolute Open Graph URLs.
+ *
+ * Vercel supplies the production domain at build time, so a correct
+ * card requires no manual step after a deploy. NEXT_PUBLIC_SITE_URL
+ * overrides it if the invitation is served from a custom domain.
+ */
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: site.meta.title,
   description: site.meta.description,
+  applicationName: site.meta.title,
   openGraph: {
+    type: "website",
     title: site.meta.title,
     description: site.meta.description,
-    type: "website",
+    siteName: site.meta.title,
+    locale: "en_IN",
+    url: "/",
+    // The card itself is app/opengraph-image.png, picked up by file
+    // convention along with its alt text.
   },
+  twitter: {
+    card: "summary_large_image",
+    title: site.meta.title,
+    description: site.meta.description,
+  },
+  // A wedding invitation is for the people who were sent it, not for
+  // search results. Remove this if the couple would rather it be found.
   robots: { index: false, follow: false },
 };
 

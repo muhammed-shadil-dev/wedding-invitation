@@ -27,36 +27,70 @@ export function useMounted(): boolean {
   return mounted;
 }
 
+/**
+ * Where the wedding is relative to right now.
+ *
+ *   upcoming — the countdown runs
+ *   now      — the ceremony is taking place
+ *   past     — it is over
+ *
+ * The middle state matters: a guest opening the invitation at 11:45
+ * on the day should not be shown a countdown reading all zeros, and
+ * should not be thanked for attending something still in progress.
+ */
+export type EventPhase = "upcoming" | "now" | "past";
+
 export type TimeLeft = {
   days: number;
   hours: number;
   minutes: number;
   seconds: number;
-  /** True once the target date has passed. */
+  phase: EventPhase;
+  /** Kept for convenience: true once the ceremony has finished. */
   past: boolean;
 };
 
-const ZERO: TimeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0, past: false };
+const ZERO: TimeLeft = {
+  days: 0,
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+  phase: "upcoming",
+  past: false,
+};
 
 /**
  * Countdown to an ISO date. Renders zeros on the server and on the
  * first client paint, then ticks — so there is no hydration mismatch.
  */
-export function useCountdown(targetIso: string): { time: TimeLeft; ready: boolean } {
+export function useCountdown(
+  targetIso: string,
+  /** When the ceremony ends. Defaults to the start, if not supplied. */
+  endsIso?: string
+): { time: TimeLeft; ready: boolean } {
   const target = useMemo(() => new Date(targetIso).getTime(), [targetIso]);
+  const ends = useMemo(
+    () => (endsIso ? new Date(endsIso).getTime() : new Date(targetIso).getTime()),
+    [endsIso, targetIso]
+  );
   const [time, setTime] = useState<TimeLeft>(ZERO);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const compute = (): TimeLeft => {
-      const diff = target - Date.now();
-      if (diff <= 0) return { ...ZERO, past: true };
+      const now = Date.now();
+      const diff = target - now;
+      if (diff <= 0) {
+        const over = now >= ends;
+        return { ...ZERO, phase: over ? "past" : "now", past: over };
+      }
       const s = Math.floor(diff / 1000);
       return {
         days: Math.floor(s / 86400),
         hours: Math.floor((s % 86400) / 3600),
         minutes: Math.floor((s % 3600) / 60),
         seconds: s % 60,
+        phase: "upcoming",
         past: false,
       };
     };
@@ -71,7 +105,7 @@ export function useCountdown(targetIso: string): { time: TimeLeft; ready: boolea
     }, 1000 - (Date.now() % 1000));
 
     return () => window.clearTimeout(timeout);
-  }, [target]);
+  }, [target, ends]);
 
   return { time, ready };
 }

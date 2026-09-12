@@ -2,11 +2,13 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, type FormEvent } from "react";
+import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
 import { Section, SceneTitle } from "@/components/ui/Section";
 import { usePrefersReducedMotion } from "@/lib/hooks";
 import { beat, fadeIn, loop, riseIn, spring, transition } from "@/lib/motion";
+import { telUrl, whatsappUrl } from "@/lib/calendar";
 import { site } from "@/site.config";
 
 type Status = "idle" | "sending" | "done" | "error";
@@ -86,16 +88,27 @@ export function Rsvp() {
       )}
 
       <Reveal variants={riseIn} delay={beat.md} className="mt-7">
-        <div className="flex flex-col items-center gap-3">
-          <p className="t-micro text-[0.52rem] tracking-[0.3em] text-ivory/45">
-            RSVP
-          </p>
+        <div className="flex flex-col items-center gap-5">
+          <p className="t-micro text-[0.52rem] tracking-[0.3em] text-ivory/45">RSVP</p>
+
           <a
-            href={`tel:${site.rsvp.phone}`}
-            className="font-display text-[1.65rem] leading-none tracking-[0.06em] text-gold-light transition-colors duration-500 hover:text-ivory"
+            href={telUrl}
+            className="inline-flex min-h-[44px] items-center px-3 font-display text-[1.65rem] leading-none tracking-[0.06em] text-gold-light transition-colors duration-500 hover:text-ivory"
           >
             {site.rsvp.phone}
           </a>
+
+          {/* Two targets, each comfortably bigger than a thumb. */}
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button href={telUrl} className="px-7 py-3.5">
+              <PhoneIcon />
+              Call
+            </Button>
+            <Button href={whatsappUrl()} variant="ghost" className="px-7 py-3.5">
+              <WhatsAppIcon />
+              WhatsApp
+            </Button>
+          </div>
         </div>
       </Reveal>
 
@@ -122,9 +135,9 @@ export function Rsvp() {
               exit={reduced ? { opacity: 0 } : { opacity: 0, y: -12 }}
               transition={transition.exit}
             >
-              <Field label="Your name" name="name" placeholder="As we should write it" required />
+              <Field label={site.scenes.rsvp.nameLabel} name="name" placeholder="As we should write it" required />
               <Field
-                label="Phone or email"
+                label={site.scenes.rsvp.contactLabel}
                 name="contact"
                 placeholder="So we can reach you"
                 required
@@ -143,7 +156,7 @@ export function Rsvp() {
                     transition={transition.entrance}
                   >
                     <Field
-                      label="How many of you"
+                      label={site.scenes.rsvp.guestsLabel}
                       name="guests"
                       type="number"
                       defaultValue="1"
@@ -160,7 +173,7 @@ export function Rsvp() {
               </AnimatePresence>
 
               <Field
-                label="A note for us"
+                label={site.scenes.rsvp.messageLabel}
                 name="message"
                 placeholder="Optional, and always read"
                 multiline
@@ -426,5 +439,37 @@ function ThankYou() {
         {site.scenes.rsvp.note}
       </motion.p>
     </motion.div>
+  );
+}
+
+/* Two icons, inline, because two glyphs do not justify an icon library. */
+
+function PhoneIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path
+        d="M5.2 2.2 6.6 5 5.3 6.4a8.5 8.5 0 0 0 4.3 4.3L11 9.4l2.8 1.4v2.4c0 .6-.5 1-1.1.9A12.4 12.4 0 0 1 1.9 3.3c-.1-.6.3-1.1.9-1.1h2.4Z"
+        stroke="currentColor"
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function WhatsAppIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path
+        d="M8 1.8a6.2 6.2 0 0 0-5.3 9.4L2 14.2l3.1-.7A6.2 6.2 0 1 0 8 1.8Z"
+        stroke="currentColor"
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5.9 5.3c.2-.1.4 0 .5.2l.5 1c.1.2 0 .4-.1.5l-.3.3c.3.7.9 1.3 1.6 1.6l.3-.3c.1-.2.3-.2.5-.1l1 .5c.2.1.3.3.2.5-.2.6-.8 1-1.4.9A5 5 0 0 1 4.9 6.7c-.1-.6.3-1.2.9-1.4Z"
+        fill="currentColor"
+      />
+    </svg>
   );
 }

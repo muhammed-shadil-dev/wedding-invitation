@@ -23,7 +23,18 @@ import { site } from "@/site.config";
  * ─────────────────────────────────────────────────────────────
  */
 export function Countdown() {
-  const { time, ready } = useCountdown(site.weddingDate);
+  const { time, ready } = useCountdown(site.weddingDate, site.weddingEndsAt);
+
+  const c = site.scenes.countdown;
+  // Three states, because a guest opening this at 11:45 on the day
+  // should not be shown a row of zeros, and should not be thanked for
+  // attending something that is still going on.
+  const copy =
+    time.phase === "now"
+      ? { label: c.nowLabel, title: c.nowTitle, note: c.nowNote }
+      : time.phase === "past"
+        ? { label: c.pastLabel, title: c.pastTitle, note: c.pastNote }
+        : { label: c.label, title: c.title, note: "" };
 
   const units = [
     { value: time.days, label: "Days" },
@@ -35,16 +46,12 @@ export function Countdown() {
   return (
     <Section id="countdown">
       <Reveal variants={fadeIn}>
-        <SceneTitle label={time.past ? site.scenes.countdown.pastLabel : site.scenes.countdown.label}>
-          <SplitText
-            text={time.past ? site.scenes.countdown.pastTitle : site.scenes.countdown.title}
-            by="line"
-            as="span"
-          />
+        <SceneTitle label={copy.label}>
+          <SplitText text={copy.title} by="line" as="span" />
         </SceneTitle>
       </Reveal>
 
-      {!time.past && (
+      {time.phase === "upcoming" && (
         <div className="mt-14 grid grid-cols-4 gap-2 sm:gap-6">
           {units.map((unit, i) => (
             <Unit
@@ -59,13 +66,11 @@ export function Countdown() {
         </div>
       )}
 
-      {site.invitation.blessing && (
+      {copy.note && (
         <>
           <Divider className="mt-16" />
           <Reveal variants={riseIn} delay={beat.sm}>
-            <p className="t-lede mt-10 text-center text-ivory/55">
-              {site.invitation.blessing}
-            </p>
+            <p className="t-lede mt-10 text-center text-ivory/55">{copy.note}</p>
           </Reveal>
         </>
       )}

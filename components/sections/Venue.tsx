@@ -8,6 +8,7 @@ import { SplitText } from "@/components/ui/SplitText";
 import { Section, SceneTitle } from "@/components/ui/Section";
 import { usePrefersReducedMotion } from "@/lib/hooks";
 import { beat, fadeIn, riseIn, transition, viewport } from "@/lib/motion";
+import { directionsUrl, googleMapsUrl } from "@/lib/calendar";
 import { site } from "@/site.config";
 
 /**
@@ -28,9 +29,9 @@ export function Venue() {
   const reduced = usePrefersReducedMotion();
   const [live, setLive] = useState(false);
 
-  const query = encodeURIComponent(site.venue.mapQuery);
-  const embed = `https://www.google.com/maps?q=${query}&output=embed&z=15`;
-  const directions = `https://www.google.com/maps/dir/?api=1&destination=${query}`;
+  const embed = `https://www.google.com/maps?q=${encodeURIComponent(
+    site.venue.mapQuery
+  )}&output=embed&z=15`;
 
   return (
     <Section id="venue">
@@ -91,9 +92,31 @@ export function Venue() {
               {site.venue.note}
             </p>
           )}
-          <Button href={directions}>Get directions</Button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button href={googleMapsUrl}>
+              <MapPinIcon />
+              Open in Google Maps
+            </Button>
+            <Button href={directionsUrl} variant="ghost">
+              Get directions
+            </Button>
+          </div>
         </div>
       </Reveal>
     </Section>
+  );
+}
+
+function MapPinIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path
+        d="M8 14.5s5-4.3 5-8a5 5 0 0 0-10 0c0 3.7 5 8 5 8Z"
+        stroke="currentColor"
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+      />
+      <circle cx="8" cy="6.4" r="1.7" stroke="currentColor" strokeWidth="1.1" />
+    </svg>
   );
 }

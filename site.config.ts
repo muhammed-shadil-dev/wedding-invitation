@@ -43,7 +43,12 @@ export const site = {
     title: "Nehda & Umar — An Invitation",
     description:
       "With the blessings of Allah, we joyfully invite you to celebrate our wedding. Sunday, 8 November 2026, Alappuzha.",
-    url: "https://example.com",
+    /**
+     * Only a fallback for share links rendered outside a browser.
+     * The live address is read from window.location at share time,
+     * and NEXT_PUBLIC_SITE_URL drives the Open Graph metadata.
+     */
+    url: "",
   },
 
   /**
@@ -105,6 +110,14 @@ export const site = {
   /** The moment the countdown runs to. */
   weddingDate: "2026-11-08T11:30:00+05:30",
 
+  /**
+   * When the ceremony ends, taken from the 12:00 PM on the card. The
+   * countdown uses it to know the difference between "not yet",
+   * "happening right now" and "thank you for being there", and the
+   * calendar files use it as the event end.
+   */
+  weddingEndsAt: "2026-11-08T12:00:00+05:30",
+
   events: [
     {
       id: "wedding",
@@ -141,12 +154,27 @@ export const site = {
   gallery: [] as readonly GalleryItem[],
 
   rsvp: {
-    /** The number printed on the card. Also used for the call link. */
+    /** The number printed on the card, shown exactly as printed. */
     phone: "9847986786",
+    /**
+     * Country dialling code, needed for the WhatsApp link only. The
+     * displayed number never shows it. Kerala number, so +91.
+     */
+    dialCode: "91",
+    /** Pre-filled WhatsApp message. */
+    whatsappMessage:
+      "Assalamu Alaikum! We would like to RSVP for Nehda & Umar's wedding.",
     /** Shown after a successful submit. */
     thankYou: "Your seat at our table is held.",
     /** Optional. Empty means no deadline line is rendered. */
     deadline: "",
+  },
+
+  /** The share sheet at the foot of the invitation. */
+  share: {
+    label: "Share this invitation",
+    /** {url} is replaced with the live address of the site. */
+    message: "You are invited to the wedding of Nehda Sadik & Umar Mukhtar, Sunday 8 November 2026 at Gregorian Convention Centre, Punnapra, Alappuzha. {url}",
   },
 
   closing: {
@@ -175,13 +203,23 @@ export const site = {
     countdown: {
       label: "Counting down",
       title: "Until we say / the words",
+      /** While the ceremony is actually taking place. */
+      nowLabel: "Today",
+      nowTitle: "It is happening / right now",
+      nowNote: "The ceremony is under way. If you are with us, thank you.",
       pastLabel: "It happened",
       pastTitle: "Thank you for / being there",
+      pastNote: "Sunday, 8 November 2026. We are glad you were part of it.",
     },
     rsvp: {
       label: "Will you be there",
       title: "Kindly / reply",
       note: "We will send the details again closer to the day. Until then, we are counting too.",
+      /** Form field labels. */
+      nameLabel: "Your name",
+      contactLabel: "Phone or email",
+      guestsLabel: "Number of guests",
+      messageLabel: "A note for us",
     },
     story: {
       label: "How we arrived here",

@@ -6,6 +6,8 @@ import { SplitText } from "@/components/ui/SplitText";
 import { Lede, Section, SceneTitle } from "@/components/ui/Section";
 import { usePrefersReducedMotion } from "@/lib/hooks";
 import { beat, dur, ease, fadeIn, riseIn, viewport } from "@/lib/motion";
+import { downloadIcs, googleCalendarUrl } from "@/lib/calendar";
+import { Button } from "@/components/ui/Button";
 import { site, type EventItem } from "@/site.config";
 
 /**
@@ -42,6 +44,24 @@ export function Events() {
           <EventCard key={event.id} event={event} index={i} />
         ))}
       </div>
+
+      <Reveal variants={riseIn} delay={beat.sm} className="mt-10">
+        <div className="flex flex-col items-center gap-4">
+          <p className="t-micro text-[0.5rem] tracking-[0.3em] text-ivory/40">
+            Keep the date
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button href={googleCalendarUrl()}>
+              <CalendarIcon />
+              Google Calendar
+            </Button>
+            {/* iOS, Apple Calendar and Outlook all want a file. */}
+            <Button variant="ghost" onClick={downloadIcs}>
+              Apple &amp; Outlook
+            </Button>
+          </div>
+        </div>
+      </Reveal>
     </Section>
   );
 }
@@ -99,7 +119,7 @@ function EventCard({ event, index }: { event: EventItem; index: number }) {
           href={mapUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-7 inline-flex items-center gap-2 t-micro text-[0.55rem] tracking-[0.28em] text-[#8a6b33] transition-colors duration-500 hover:text-[#5c4620]"
+          className="group mt-5 inline-flex min-h-[44px] items-center gap-2 px-4 py-3 t-micro text-[0.55rem] tracking-[0.28em] text-[#8a6b33] transition-colors duration-500 hover:text-[#5c4620]"
         >
           <span>Directions</span>
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
@@ -124,5 +144,14 @@ function Row({ label, value }: { label: string; value: string }) {
       <dt className="t-micro text-[0.5rem] tracking-[0.28em] text-[#a89573]">{label}</dt>
       <dd className="t-caption text-pretty">{value}</dd>
     </div>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <rect x="2" y="3.2" width="12" height="10.8" rx="1.4" stroke="currentColor" strokeWidth="1.1" />
+      <path d="M2 6.4h12M5.4 1.9v2.6M10.6 1.9v2.6" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+    </svg>
   );
 }

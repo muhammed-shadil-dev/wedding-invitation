@@ -6,6 +6,7 @@ import { Monogram } from "@/components/ui/Monogram";
 import { Reveal } from "@/components/ui/Reveal";
 import { SplitText } from "@/components/ui/SplitText";
 import { Flourish } from "@/components/ui/Ornament";
+import { ShareInvitation } from "@/components/ui/ShareInvitation";
 import { usePrefersReducedMotion } from "@/lib/hooks";
 import { beat, riseIn, stagger, transition } from "@/lib/motion";
 import { site } from "@/site.config";
@@ -78,8 +79,12 @@ export function Closing() {
           </div>
         </Reveal>
 
+        <Reveal variants={riseIn} delay={beat.md} className="mt-16">
+          <ShareInvitation />
+        </Reveal>
+
         <Reveal variants={riseIn} delay={beat.lg}>
-          <p className="t-micro mt-16 text-[0.5rem] tracking-[0.28em] text-ivory/45">
+          <p className="t-micro mt-14 text-[0.5rem] tracking-[0.28em] text-ivory/45">
             {site.credits}
           </p>
         </Reveal>
