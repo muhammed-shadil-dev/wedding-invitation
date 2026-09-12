@@ -18,15 +18,20 @@ export function Monogram({
   className = "",
   animate = true,
   delay = 0,
+  /** Which ground it sits on. The close is light, so it needs ink. */
+  tone = "gold",
 }: {
   initials: readonly string[];
   size?: number;
   className?: string;
   animate?: boolean;
   delay?: number;
+  tone?: "gold" | "ink";
 }) {
   const reduced = usePrefersReducedMotion();
   const draws = animate && !reduced;
+  const ring = tone === "ink" ? "text-[#8a6b33]" : "text-gold";
+  const letters = tone === "ink" ? "text-[#331d2a]" : "text-gold";
   const engrave = { duration: dur.cinema, ease: ease.veil };
 
   return (
@@ -35,7 +40,7 @@ export function Monogram({
       style={{ width: size, height: size }}
       aria-label={`${initials[0]} and ${initials[1]}`}
     >
-      <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full text-gold" aria-hidden>
+      <svg viewBox="0 0 100 100" className={`absolute inset-0 h-full w-full ${ring}`} aria-hidden>
         <motion.circle
           cx="50"
           cy="50"
@@ -43,9 +48,9 @@ export function Monogram({
           fill="none"
           stroke="currentColor"
           strokeWidth="0.6"
-          opacity="0.55"
+          opacity={tone === "ink" ? 0.75 : 0.55}
           initial={draws ? { pathLength: 0, opacity: 0 } : false}
-          whileInView={draws ? { pathLength: 1, opacity: 0.55 } : undefined}
+          whileInView={draws ? { pathLength: 1, opacity: tone === "ink" ? 0.75 : 0.55 } : undefined}
           viewport={{ once: true }}
           transition={{ ...engrave, delay: safeDelay(delay, reduced) }}
           style={{ rotate: -90, transformOrigin: "50% 50%" }}
@@ -67,11 +72,13 @@ export function Monogram({
       </svg>
 
       <span
-        className="relative flex items-baseline font-display text-gold"
+        className={`relative flex items-baseline font-display ${letters}`}
         style={{ fontSize: size * 0.34, letterSpacing: "0.02em" }}
       >
         <span>{initials[0]}</span>
-        <span className="amp">&amp;</span>
+        <span className="amp" style={tone === "ink" ? { color: "#6d5225" } : undefined}>
+          &amp;
+        </span>
         <span>{initials[1]}</span>
       </span>
     </div>

@@ -42,9 +42,9 @@ import { site } from "@/site.config";
  *  until then, breaks and all. Nothing has to be commented out.
  *
  *  The content is always mounted; it is the gate that sits on top of
- *  it. So fonts and the map iframe are decoded and ready by the time
- *  the envelope finishes opening, and no guest ever waits for a scene
- *  to load — every scene loaded while they were watching the seal
+ *  it. So the fonts and every scene are decoded and laid out by the
+ *  time the envelope finishes opening, and no guest ever waits for a
+ *  scene to load — all of it loaded while they were watching the seal
  *  break.
  * ─────────────────────────────────────────────────────────────
  */

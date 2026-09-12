@@ -26,7 +26,12 @@ import { site } from "@/site.config";
  *  reveal, so nothing is lost by waiting for the client.
  * ─────────────────────────────────────────────────────────────
  */
-export function ShareInvitation() {
+export function ShareInvitation({
+  /** Which ground the row is standing on. The close is light. */
+  tone = "gold",
+}: {
+  tone?: "gold" | "ink";
+}) {
   const mounted = useMounted();
   const [copied, setCopied] = useState(false);
 
@@ -60,23 +65,27 @@ export function ShareInvitation() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <p className="t-micro text-[0.5rem] tracking-[0.3em] text-ivory/40">
+      <p
+        className={`t-micro text-[0.55rem] tracking-[0.3em] ${
+          tone === "ink" ? "text-[#5c3a2e]" : "text-ivory/45"
+        }`}
+      >
         {site.share.label}
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-3">
         {canShare && (
-          <Button onClick={nativeShare}>
+          <Button onClick={nativeShare} variant={tone}>
             <ShareIcon />
             Share
           </Button>
         )}
 
-        <Button href={whatsappShareUrl()} variant={canShare ? "ghost" : "gold"}>
+        <Button href={whatsappShareUrl()} variant={tone}>
           WhatsApp
         </Button>
 
-        <Button onClick={copy} variant="ghost">
+        <Button onClick={copy} variant={tone}>
           {copied ? "Link copied" : "Copy link"}
         </Button>
       </div>

@@ -14,9 +14,19 @@
   --color-plum: #1b1424;
   --color-dusk: #2a1f33;
 
-  /* Dawn — where the story ends */
-  --color-ember: #3a2418;
-  --color-amber: #6b4423;
+  /* Dawn — where the story ends.
+     The journey now actually completes: the night warms through
+     burgundy and terracotta and finishes on paper, which is what the
+     envelope promised at the very start. */
+  --color-burgundy: #5e3038;
+  --color-terracotta: #a96a4e;
+  --color-champagne: #ecd9b8;
+  --color-ivory-warm: #f4e7d2;
+
+  /* Ink for the light ground at the close. Dark enough to read on
+     champagne at arm's length on a phone in daylight. */
+  --color-ink-plum: #331d2a;
+  --color-ink-warm: #5c3a2e;
 
   /* Paper */
   --color-ivory: #f7f2e8;
@@ -226,7 +236,6 @@ html.lenis body {
   height: 400%;
   pointer-events: none;
   z-index: 60;
-  opacity: 0.16;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
   animation: grain-drift 7s steps(6) infinite;
@@ -308,7 +317,6 @@ html.lenis body {
 
   .grain {
     animation: none;
-    opacity: 0.1;
   }
 
   .foil {

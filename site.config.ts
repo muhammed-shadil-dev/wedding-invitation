@@ -198,7 +198,7 @@ export const site = {
       lede: "Please join us as we begin our life together.",
     },
     venue: {
-      label: "Where to find us",
+      label: "The venue",
     },
     countdown: {
       label: "Counting down",

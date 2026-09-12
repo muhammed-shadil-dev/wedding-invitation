@@ -23,7 +23,7 @@ export function Button({
   onClick?: () => void;
   href?: string;
   type?: "button" | "submit";
-  variant?: "gold" | "ghost";
+  variant?: "gold" | "ghost" | "ink";
   className?: string;
   disabled?: boolean;
 }) {
@@ -32,17 +32,28 @@ export function Button({
   const base =
     "group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full px-8 py-4 t-micro transition-colors duration-500 disabled:opacity-40";
 
+  /**
+   * `ink` is the light-ground twin of `gold`: the same shape and the
+   * same ink-soaking fill, inverted for the champagne at the close.
+   * Pale gold text on a warm ground is the exact failure this avoids.
+   */
   const skin =
     variant === "gold"
       ? "border border-gold/45 text-gold-light hover:text-ink"
-      : "border border-ivory/20 text-ivory/75 hover:text-ivory";
+      : variant === "ink"
+        ? "border border-[#8a6b33]/60 text-[#331d2a] hover:text-[#f4e7d2]"
+        : "border border-ivory/20 text-ivory/75 hover:text-ivory";
 
   const content = (
     <>
       <span
         aria-hidden
         className={`absolute inset-0 origin-bottom scale-y-0 transition-transform duration-[700ms] ease-[var(--ease-silk)] group-hover:scale-y-100 group-focus-visible:scale-y-100 ${
-          variant === "gold" ? "bg-gold" : "bg-ivory/10"
+          variant === "gold"
+            ? "bg-gold"
+            : variant === "ink"
+              ? "bg-[#331d2a]"
+              : "bg-ivory/10"
         }`}
       />
       <span className="relative z-10 flex items-center gap-3">{children}</span>
